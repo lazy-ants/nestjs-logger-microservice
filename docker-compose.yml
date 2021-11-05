@@ -1,0 +1,27 @@
+version: "3.7"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    volumes:
+      - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
+      # - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/ # to access logs
+    restart: always
+
+  mongodb:
+    image: mongo
+    command: --wiredTigerCacheSizeGB 2
+    volumes:
+      - ./.docker/mongodb/:/data/db
+    restart: always
+
+  nodejs:
+    build: docker/nodejs
+    depends_on:
+      - rabbitmq
+      - mongodb
+    volumes:
+      - .:/var/www/app
+    restart: always
+    stdin_open: true
+    tty: true

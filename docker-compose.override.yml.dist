@@ -1,0 +1,29 @@
+version: "3.7"
+
+services:
+  rabbitmq:
+    environment:
+      RABBITMQ_DEFAULT_USER: 'admin'
+      RABBITMQ_DEFAULT_PASS: 'gateway-bunny'
+    ports:
+      - "127.0.0.1:5672:5672"
+      # - "0.0.0.0:5672:5672" # to access outside
+      - "127.0.0.1:15672:15672"
+      # - "0.0.0.0:15672:15672" # to access outside
+
+  mongodb:
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 'root'
+      MONGO_INITDB_ROOT_PASSWORD: 'changeme'
+      MONGO_INITDB_DATABASE: 'logs'
+    ports:
+      - "127.0.0.1:27017:27017"
+
+  nodejs:
+    container_name: nestjs-logger-microservice_nodejs
+    environment:
+      AMQP_URL: 'amqp://admin:gateway-bunny@rabbitmq:5672'
+      AMQP_QUEUE: 'logs_queue'
+      AMQP_PREFETCH_COUNT: 5
+      MONGODB_URI: 'mongodb://root:changeme@mongodb'
+      MONGODB_DATABASE: 'logs'
